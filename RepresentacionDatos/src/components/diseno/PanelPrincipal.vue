@@ -5,10 +5,18 @@
         <span>Visualizador Financiero</span>
       </div>
       <nav class="navegacion">
-        <button class="boton-nav" :class="{ 'activo': seccionActiva === 'datos' }">
+        <button 
+          class="boton-nav" 
+          :class="{ 'activo': seccionActiva === 'adquisicion' }" 
+          @click="navegar('adquisicion')"
+        >
           Adquisición de datos
         </button>
-        <button class="boton-nav" :class="{ 'activo': seccionActiva === 'visualizacion' }">
+        <button 
+          class="boton-nav" 
+          :class="{ 'activo': seccionActiva === 'visualizacion' }" 
+          @click="navegar('visualizacion')"
+        >
           Visualizador de datos
         </button>
       </nav>
@@ -21,18 +29,44 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, watch } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 
 export default {
   name: 'PanelPrincipal',
   setup() {
-    const seccionActiva = ref('visualizacion')
+    const router = useRouter();
+    const route = useRoute();
+    const seccionActiva = ref('visualizacion');
+
+    const navegar = (seccion) => {
+      seccionActiva.value = seccion;
+      if (seccion === 'adquisicion') {
+        router.push('/adquisicion');
+      } else if (seccion === 'visualizacion') {
+        router.push('/visualizacion');
+      }
+    };
+
+    // Actualiza la sección activa según la ruta actual
+    watch(
+      () => route.path,
+      (nuevaRuta) => {
+        if (nuevaRuta.includes('adquisicion')) {
+          seccionActiva.value = 'adquisicion';
+        } else if (nuevaRuta.includes('visualizacion')) {
+          seccionActiva.value = 'visualizacion';
+        }
+      },
+      { immediate: true }
+    );
 
     return {
-      seccionActiva
-    }
-  }
-}
+      seccionActiva,
+      navegar,
+    };
+  },
+};
 </script>
 
 <style scoped>
