@@ -1,4 +1,4 @@
-<template>
+ <template>
   <div class="grafico-container">
     <div v-if="!hayDatos" class="sin-datos">
       No hay datos de dirección disponibles
@@ -128,6 +128,11 @@ export default {
   width: 100%;
   height: 350px;
   position: relative;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  margin: 16px 0;
 }
 
 .grafico-circular {

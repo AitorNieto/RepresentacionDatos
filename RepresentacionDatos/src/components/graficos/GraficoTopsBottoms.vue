@@ -160,6 +160,11 @@ export default {
   width: 100%;
   height: 400px;
   position: relative;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  margin: 16px 0;
 }
 
 .grafico-tops-bottoms {

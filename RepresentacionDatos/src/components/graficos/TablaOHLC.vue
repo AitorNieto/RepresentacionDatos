@@ -58,8 +58,10 @@ export default {
 .tabla-ohlc {
   overflow-x: auto;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   background-color: white;
+  padding: 16px;
+  margin: 16px 0;
 }
 
 table {

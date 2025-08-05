@@ -24,6 +24,14 @@ function actualizarTemporalidad(event) {
           </a>
         </li>
         <li>
+          <span class="apartado">Gráficos</span>
+          <ul class="subapartados">
+            <li><a @click.prevent="navigate('/grafico/circular')">📊 Distribución Alcista/Bajista</a></li>
+            <li><a @click.prevent="navigate('/grafico/tops-bottoms')">🕰️ Tops & Bottoms</a></li>
+            <li><a @click.prevent="navigate('/grafico/tabla-ohlc')">📋 Estadísticas OHLC</a></li>
+          </ul>
+        </li>
+          <li>
           <span class="apartado">Filtros</span>
           <ul class="subapartados">
             <li>
@@ -34,14 +42,6 @@ function actualizarTemporalidad(event) {
                 <option value="mensual">Mensual</option>
               </select>
             </li>
-          </ul>
-        </li>
-        <li>
-          <span class="apartado">Gráficos</span>
-          <ul class="subapartados">
-            <li><a @click.prevent="navigate('/grafico/circular')">📊 Distribución Alcista/Bajista</a></li>
-            <li><a @click.prevent="navigate('/grafico/tops-bottoms')">🕰️ Tops & Bottoms</a></li>
-            <li><a @click.prevent="navigate('/grafico/tabla-ohlc')">📋 Estadísticas OHLC</a></li>
           </ul>
         </li>
       </ul>
@@ -111,7 +111,8 @@ select {
   color: white;
   text-decoration: none;
   font-size: 1rem;
-  padding: 10px 15px;
+  margin-top: 7px;
+  padding: 15px 0.7px;
   border-radius: 4px;
   transition: background-color 0.2s;
 }

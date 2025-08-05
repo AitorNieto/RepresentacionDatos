@@ -91,6 +91,7 @@ export default {
 .contenido-panel {
   flex: 1;
   padding: 20px;
-  background-color: #f5f5f4;
+
+  background: linear-gradient(to bottom, #0000ff, #94afe2);
 }
 </style>
