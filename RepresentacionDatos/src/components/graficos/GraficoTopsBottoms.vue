@@ -180,6 +180,6 @@ export default {
 }
 
 .loading {
-  color: #3b82f6;
+  color: rgb(223, 223, 223);
 }
 </style>
