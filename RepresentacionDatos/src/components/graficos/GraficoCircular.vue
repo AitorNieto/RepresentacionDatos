@@ -63,3 +63,84 @@ export default {
           label: { 
             show: true,
             formatter: '{b}: {d}%',
+            fontSize: 12
+          },
+          emphasis: {
+            label: { 
+              show: true, 
+              fontSize: 16, 
+              fontWeight: 'bold' 
+            },
+            itemStyle: {
+              shadowBlur: 10,
+              shadowOffsetX: 0,
+              shadowColor: 'rgba(0, 0, 0, 0.5)'
+            }
+          },
+          color: ['#10b981', '#ef4444']
+        }]
+      }
+
+      miGrafico.setOption(opciones, true)
+    }
+
+    const redimensionarGrafico = () => {
+      if (miGrafico) {
+        miGrafico.resize()
+      }
+    }
+
+    onMounted(() => {
+      if (!estado.cargando && hayDatos.value) {
+        inicializarGrafico()
+      }
+    })
+
+    onBeforeUnmount(() => {
+      if (miGrafico) {
+        miGrafico.dispose()
+        window.removeEventListener('resize', redimensionarGrafico)
+        miGrafico = null
+      }
+    })
+
+    watch([datosDireccionMercado, hayDatos], () => {
+      if (miGrafico && hayDatos.value) {
+        actualizarGrafico()
+      } else if (!hayDatos.value && miGrafico) {
+        miGrafico.dispose()
+        miGrafico = null
+      } else if (hayDatos.value && !miGrafico) {
+        inicializarGrafico()
+      }
+    }, { deep: true })
+
+    return { 
+      contenedorGrafico,
+      hayDatos
+    }
+  }
+}
+</script>
+
+<style scoped>
+.grafico-container {
+  width: 100%;
+  height: 350px;
+  position: relative;
+}
+
+.grafico-circular {
+  width: 100%;
+  height: 100%;
+}
+
+.sin-datos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #64748b;
+  font-style: italic;
+}
+</style>

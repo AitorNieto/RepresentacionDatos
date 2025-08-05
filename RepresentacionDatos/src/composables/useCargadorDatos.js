@@ -5,31 +5,31 @@ let estadoGlobal = null
 
 // Importamos dinámicamente todos los archivos JSON de la carpeta datos
 const importarTodosDatos = async () => {
-  const modules = import.meta.glob('@/components/datos/*.json')
-  const datos = {}
-  
-  for (const path in modules) {
-    try {
-      const module = await modules[path]()
-      const nombreActivo = path.split('/').pop().replace('.json', '').toUpperCase()
-      
-      // Evitar duplicados - priorizar archivos principales
-      if (nombreActivo === 'OHLC_DATA') return // Ignorar duplicado
-      
-      datos[nombreActivo] = module.default || module
-    } catch (error) {
-      console.error(`Error cargando ${path}:`, error)
+  try {
+    const modules = import.meta.glob('@/components/datos/*.json', { eager: true }) // Cambiado a 'eager' para cargar directamente
+    const datos = {}
+
+    for (const path in modules) {
+      try {
+        const nombreActivo = path.split('/').pop().replace('.json', '').toUpperCase()
+        datos[nombreActivo] = modules[path]
+      } catch (error) {
+        console.error(`Error procesando ${path}:`, error)
+      }
     }
+
+    return datos
+  } catch (error) {
+    console.error('Error al importar los datos:', error)
+    throw new Error('No se pudieron cargar los datos JSON.')
   }
-  
-  return datos
 }
 
 // Función para combinar datos de archivos separados en una estructura unificada
 const combinarDatos = (datosOHLC, datosPivotes) => {
   return {
-    OHLC: datosOHLC.OHLC,
-    pivot_points: datosPivotes.pivot_points
+    OHLC: datosOHLC?.OHLC || {},
+    pivot_points: datosPivotes?.pivot_points || {}
   }
 }
 
@@ -54,9 +54,9 @@ export function useCargadorDatos() {
     try {
       estado.value.cargando = true
       estado.value.error = null
-      
+
       const datosImportados = await importarTodosDatos()
-      
+
       // Combinar datos si hay archivos separados
       if (datosImportados.OHLC && datosImportados.PIVOT_POINTS) {
         const datosCombinados = combinarDatos(datosImportados.OHLC, datosImportados.PIVOT_POINTS)
@@ -66,13 +66,12 @@ export function useCargadorDatos() {
       } else {
         estado.value.todosDatos = datosImportados
         estado.value.activosDisponibles = Object.keys(datosImportados)
-        
+
         // Establecer primer activo disponible por defecto
         if (estado.value.activosDisponibles.length > 0) {
           cambiarActivo(estado.value.activosDisponibles[0])
         }
       }
-      
     } catch (error) {
       console.error('Error al cargar datos:', error)
       estado.value.error = 'Error al cargar los datos. Verifique que los archivos JSON estén disponibles.'
@@ -104,20 +103,20 @@ export function useCargadorDatos() {
       console.warn('No hay datos de pivot_points disponibles')
       return { tops: [], bottoms: [] }
     }
-    
+
     const temporalidadActual = estado.value.temporalidad
     console.log('Procesando pivotes para temporalidad:', temporalidadActual)
     console.log('Datos de pivot_points:', estado.value.datosActuales.pivot_points)
-    
+
     const pivotes = estado.value.datosActuales.pivot_points[temporalidadActual]
-    
+
     if (!pivotes) {
       console.warn(`No hay datos para temporalidad: ${temporalidadActual}`)
       return { tops: [], bottoms: [] }
     }
-    
+
     console.log('Pivotes encontrados:', pivotes)
-    
+
     const procesar = (items, esTop = true) => {
       if (!items || typeof items !== 'object') return []
       return Object.entries(items).map(([clave, valor]) => ({
@@ -125,12 +124,12 @@ export function useCargadorDatos() {
         valor: esTop ? Number(valor) : -Math.abs(Number(valor))
       }))
     }
-    
+
     const resultado = {
       tops: procesar(pivotes.top, true),
       bottoms: procesar(pivotes.bottom, false)
     }
-    
+
     console.log('Datos procesados:', resultado)
     return resultado
   })
@@ -143,7 +142,7 @@ export function useCargadorDatos() {
         { name: 'Bajista', value: 0 }
       ]
     }
-    
+
     const direction = estado.value.datosActuales.OHLC.direction
     return [
       { name: 'Alcista', value: Number(direction.Bullish) || 0 },
@@ -156,19 +155,19 @@ export function useCargadorDatos() {
     if (!estado.value.datosActuales?.OHLC) {
       return {}
     }
-    
+
     // Mapeo de temporalidad para OHLC (primera letra mayúscula)
     const temporalidadMayuscula = {
       diario: 'Diario',
       semanal: 'Semanal',
       mensual: 'Mensual'
     }[estado.value.temporalidad] || 'Diario'
-    
+
     console.log('Buscando datos OHLC para:', temporalidadMayuscula)
     console.log('Datos OHLC disponibles:', Object.keys(estado.value.datosActuales.OHLC))
-    
+
     const ohlc = estado.value.datosActuales.OHLC[temporalidadMayuscula] || {}
-    
+
     return {
       higher_extension: ohlc.higher_extension || {},
       lower_extension: ohlc.lower_extension || {},
