@@ -52,7 +52,7 @@ function actualizarTemporalidad(event) {
 <style scoped>
 .menu {
   width: 250px;
-  height: 100%;
+  height: 207%;
   background-color: rgba(16, 77, 107, 0.8);
   color: white;
   padding: 20px;
@@ -112,7 +112,7 @@ select {
   text-decoration: none;
   font-size: 1rem;
   margin-top: 7px;
-  padding: 15px 0.7px;
+  padding: 10px 0.7px;
   border-radius: 4px;
   transition: background-color 0.2s;
 }

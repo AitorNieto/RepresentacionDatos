@@ -9,7 +9,6 @@
       Usa el menú de la izquierda para navegar entre las diferentes secciones:
     </p>
     <ul class="lista-secciones">
-      <li><strong>🏠 Inicio:</strong> Esta página de introducción.</li>
       <li><strong>📊 Visualizador de datos:</strong> Explora gráficos y tablas con información financiera.</li>
     </ul>
   </div>
@@ -126,12 +125,16 @@ h1 .resaltado::after {
 .lista-secciones {
   margin-top: 40px;
   padding-left: 0;
+  text-align: center;
   list-style: none;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
   position: relative;
   z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .lista-secciones li {
