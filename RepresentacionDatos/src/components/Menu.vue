@@ -1,21 +1,16 @@
 <script setup>
-import { ref } from 'vue';
-const emit = defineEmits(['navigate']);
+import { useRouter } from 'vue-router';
+import { useCargadorDatos } from '@/composables/useCargadorDatos';
 
-function navigate(section) {
-  emit('navigate', section);
+const router = useRouter();
+const { cambiarTemporalidad, estado } = useCargadorDatos();
+
+function navigate(route) {
+  router.push(route);
 }
 
-function handleLogout() {
-  alert("Sesión cerrada correctamente (simulado).");
-  emit('navigate', 'login');
-}
-
-// Controla qué dropdown está abierto
-const openDropdown = ref('');
-
-function toggleDropdown(name) {
-  openDropdown.value = openDropdown.value === name ? '' : name;
+function actualizarTemporalidad(event) {
+  cambiarTemporalidad(event.target.value);
 }
 </script>
 
@@ -24,68 +19,24 @@ function toggleDropdown(name) {
     <nav>
       <ul>
         <li>
-          <span class="apartado">Cuenta</span>
-          <ul class="subapartados">
-            <li><a href="#" @click="navigate('sub1a')">🙍 Usuario</a></li>
-          </ul>
-        </li>
-        <li>
-          <span class="apartado">Graficos</span>
-          <ul class="subapartados">
-            <li><a href="#" @click="navigate('sub2a')">🔒 Open & Close</a></li>
-            <li><a href="#" @click="navigate('sub2b')">📈 Range & Volume</a></li>
-            <li><a href="#" @click="navigate('sub2c')">📊 Change Moves</a></li>
-            <li><a href="#" @click="navigate('sub2b')">✅​ Tests & Breacks</a></li>
-            <li><a href="#" @click="navigate('sub2b')">🕰️​ Tops & Bottoms</a></li>
-          </ul>
-        </li>
-        <li>
-          <hr class="menu-separator" />
-        </li>
-        <!-- Subapartados desplegables -->
-        <li>
-          <span class="apartado">Simbolo</span>
+          <span class="apartado">Filtros</span>
           <ul class="subapartados">
             <li>
-              <button class="dropdown-btn" @click="toggleDropdown('simbolo')">
-                Opciones Simbolo
-              </button>
-              <ul v-if="openDropdown === 'simbolo'" class="dropdown-list">
-                <li><a href="#" @click="navigate('simbolo1')">Simbolo 1</a></li>
-                <li><a href="#" @click="navigate('simbolo2')">Simbolo 2</a></li>
-                <li><a href="#" @click="navigate('simbolo3')">Simbolo 3</a></li>
-              </ul>
+              <label for="temporalidad">Temporalidad:</label>
+              <select id="temporalidad" :value="estado.temporalidad" @change="actualizarTemporalidad">
+                <option value="diario">Diario</option>
+                <option value="semanal">Semanal</option>
+                <option value="mensual">Mensual</option>
+              </select>
             </li>
           </ul>
         </li>
         <li>
-          <span class="apartado">Temporada</span>
+          <span class="apartado">Gráficos</span>
           <ul class="subapartados">
-            <li>
-              <button class="dropdown-btn" @click="toggleDropdown('temporada')">
-                Opciones Temporada
-              </button>
-              <ul v-if="openDropdown === 'temporada'" class="dropdown-list">
-                <li><a href="#" @click="navigate('temporada1')">Diario</a></li>
-                <li><a href="#" @click="navigate('temporada2')">Semanal</a></li>
-                <li><a href="#" @click="navigate('temporada3')">Mensual</a></li>
-              </ul>
-            </li>
-          </ul>
-        </li>
-        <li>
-          <span class="apartado">Metrica</span>
-          <ul class="subapartados">
-            <li>
-              <button class="dropdown-btn" @click="toggleDropdown('metrica')">
-                Opciones Metrica
-              </button>
-              <ul v-if="openDropdown === 'metrica'" class="dropdown-list">
-                <li><a href="#" @click="navigate('metrica1')">Metrica 1</a></li>
-                <li><a href="#" @click="navigate('metrica2')">Metrica 2</a></li>
-                <li><a href="#" @click="navigate('metrica3')">Metrica 3</a></li>
-              </ul>
-            </li>
+            <li><a @click.prevent="navigate('/grafico/circular')">📊 Distribución Alcista/Bajista</a></li>
+            <li><a @click.prevent="navigate('/grafico/tops-bottoms')">🕰️ Tops & Bottoms</a></li>
+            <li><a @click.prevent="navigate('/grafico/tabla-ohlc')">📋 Estadísticas OHLC</a></li>
           </ul>
         </li>
       </ul>
@@ -94,13 +45,6 @@ function toggleDropdown(name) {
 </template>
 
 <style scoped>
-* {
-  font-family: "Poppins", sans-serif;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 .menu {
   position: fixed;
   top: 0;
@@ -132,7 +76,7 @@ function toggleDropdown(name) {
 }
 
 .subapartados {
-  margin-left: 35px;
+  margin-left: 15px;
 }
 
 .subapartados li {
@@ -150,42 +94,12 @@ function toggleDropdown(name) {
   color: #00e1ff;
 }
 
-.menu-separator {
-  border: 2px solid #ffffff55;
-  margin: 20px 0;
-}
-
-.dropdown-btn {
-  background: #14506b;
-  color: white;
-  border: none;
+select {
   padding: 8px 12px;
   border-radius: 4px;
-  cursor: pointer;
+  border: 1px solid #ddd;
+  background-color: white;
+  color: #292524;
   width: 100%;
-  text-align: left;
-}
-
-.dropdown-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  margin-top: 5px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.dropdown-list li {
-  margin: 0;
-}
-
-.dropdown-list a {
-  padding: 10px 15px;
-  display: block;
-}
-
-.dropdown-list a:hover {
-  background: rgba(255, 255, 255, 0.2);
 }
 </style>
