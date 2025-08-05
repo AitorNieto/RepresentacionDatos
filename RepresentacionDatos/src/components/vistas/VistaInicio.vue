@@ -8,19 +8,17 @@
       </div>
     </div>
 
-    <div class="contenido-principal">
-      <TarjetaGrafico titulo="Distribución Alcista/Bajista">
-        <GraficoCircular />
-      </TarjetaGrafico>
+     <TarjetaGrafico titulo="Distribución Alcista/Bajista">
+      <GraficoCircular />
+    </TarjetaGrafico>
 
-      <TarjetaGrafico :titulo="`Tops y Bottoms - ${temporalidadFormateada}`">
-        <GraficoTopsBottoms :temporalidad="temporalidadSeleccionada" />
-      </TarjetaGrafico>
+    <TarjetaGrafico :titulo="`Tops y Bottoms - ${temporalidadFormateada}`">
+      <GraficoTopsBottoms :temporalidad="temporalidadSeleccionada" />
+    </TarjetaGrafico>
 
-      <TarjetaGrafico :titulo="`Estadísticas OHLC - ${temporalidadFormateada}`">
-        <TablaOHLC :temporalidad="temporalidadSeleccionada" />
-      </TarjetaGrafico>
-    </div>
+    <TarjetaGrafico :titulo="`Estadísticas OHLC - ${temporalidadFormateada}`">
+      <TablaOHLC :temporalidad="temporalidadSeleccionada" />
+    </TarjetaGrafico>
   </div>
 </template>
 

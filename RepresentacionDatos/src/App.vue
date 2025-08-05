@@ -7,25 +7,19 @@
 </template>
 
 <script>
+import { defineComponent } from 'vue'
 import PanelPrincipal from '@/components/diseno/PanelPrincipal.vue'
-import VistaInicio from '@/components/vistas/VistaInicio.vue'
+import VistaInicio from './components/vistas/VistaInicio.vue'
 
-export default {
+export default defineComponent({
   name: 'App',
   components: {
     PanelPrincipal,
     VistaInicio
   }
-}
+})
 </script>
 
 <style>
-#app {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #292524;
-  min-height: 100vh;
-  background-color: #f5f5f4;
-}
+/* Estilos globales si los necesitas */
 </style>

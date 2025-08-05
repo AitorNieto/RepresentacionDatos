@@ -1,42 +1,25 @@
 <template>
-  <div class="tarjeta-grafico">
-    <h3>Distribución Alcista/Bajista</h3>
-    <div ref="contenedorGrafico" class="grafico-container"></div>
-  </div>
+  <div ref="contenedorGrafico" class="grafico-circular"></div>
 </template>
 
 <script>
-import { ref, onMounted, computed } from 'vue';
-import * as echarts from 'echarts';
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
+import * as echarts from 'echarts'
 import { useCargadorDatos } from '@/composables/useCargadorDatos'
 
 export default {
   name: 'GraficoCircular',
   setup() {
-    const { datos } = useCargadorDatos();
-    const contenedorGrafico = ref(null);
-    let miGrafico = null;
-
-    const datosGrafico = computed(() => {
-      return [
-        { value: datos.value.ohlc.direction.Bullish, name: 'Alcista' },
-        { value: datos.value.ohlc.direction.Bearish, name: 'Bajista' }
-      ];
-    });
+    const contenedorGrafico = ref(null)
+    const { datosDireccionMercado } = useCargadorDatos()
+    let miGrafico = null
 
     const inicializarGrafico = () => {
       if (contenedorGrafico.value) {
-        miGrafico = echarts.init(contenedorGrafico.value);
-        actualizarGrafico();
-        window.addEventListener('resize', redimensionarGrafico);
+        miGrafico = echarts.init(contenedorGrafico.value)
+        actualizarGrafico()
       }
-    };
-
-    const redimensionarGrafico = () => {
-      if (miGrafico) {
-        miGrafico.resize();
-      }
-    };
+    }
 
     const actualizarGrafico = () => {
       const opciones = {
@@ -47,53 +30,58 @@ export default {
         legend: {
           orient: 'vertical',
           right: 10,
-          top: 'center',
-          textStyle: { color: '#292524' }
+          top: 'center'
         },
-        series: [
-          {
-            name: 'Distribución',
-            type: 'pie',
-            radius: ['50%', '70%'],
-            avoidLabelOverlap: false,
-            itemStyle: {
-              borderRadius: 10,
-              borderColor: '#fff',
-              borderWidth: 2
-            },
+        series: [{
+          name: 'Distribución',
+          type: 'pie',
+          radius: ['50%', '70%'],
+          avoidLabelOverlap: false,
+          itemStyle: {
+            borderRadius: 10,
+            borderColor: '#fff',
+            borderWidth: 2
+          },
+          label: {
+            show: false,
+            position: 'center'
+          },
+          emphasis: {
             label: {
-              show: false,
-              position: 'center'
-            },
-            emphasis: {
-              label: {
-                show: true,
-                fontSize: '18',
-                fontWeight: 'bold'
-              }
-            },
-            labelLine: {
-              show: false
-            },
-            data: datosGrafico.value,
-            color: ['#16a34a', '#dc2626']
-          }
-        ]
-      };
+              show: true,
+              fontSize: '18',
+              fontWeight: 'bold'
+            }
+          },
+          labelLine: {
+            show: false
+          },
+          data: datosDireccionMercado.value || [], // Usamos el valor computado
+          color: ['#16a34a', '#dc2626']
+        }]
+      }
 
-      miGrafico.setOption(opciones);
-    };
+      miGrafico.setOption(opciones)
+    }
 
-    onMounted(inicializarGrafico);
+    onMounted(() => {
+      inicializarGrafico()
+      window.addEventListener('resize', () => miGrafico?.resize())
+    })
 
-    return { contenedorGrafico };
+    onBeforeUnmount(() => {
+      miGrafico?.dispose()
+      window.removeEventListener('resize', () => miGrafico?.resize())
+    })
+
+    return { contenedorGrafico }
   }
-};
+}
 </script>
 
 <style scoped>
-.grafico-container {
+.grafico-circular {
   width: 100%;
-  height: 350px;
+  height: 400px;
 }
 </style>
