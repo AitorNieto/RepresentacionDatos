@@ -28,30 +28,30 @@
 </template>
 
 <script>
-import { computed } from 'vue'
-import { useCargadorDatos } from '@/composables/useCargadorDatos'
+import { computed } from 'vue';
+import { useCargadorDatos } from '@/composables/useCargadorDatos';
 
 export default {
   name: 'TablaOHLC',
   setup() {
-    const { datosOHLCTabla } = useCargadorDatos()
+    const { datosOHLCTabla } = useCargadorDatos();
 
     const formatearNombreMetric = (metric) => {
       const nombres = {
         higher_extension: 'Extensión Superior',
         lower_extension: 'Extensión Inferior',
         high_fade: 'High Fade',
-        low_fade: 'Low Fade'
-      }
-      return nombres[metric] || metric
-    }
+        low_fade: 'Low Fade',
+      };
+      return nombres[metric] || metric;
+    };
 
     return {
       datosOHLCTabla,
-      formatearNombreMetric
-    }
-  }
-}
+      formatearNombreMetric,
+    };
+  },
+};
 </script>
 
 <style scoped>

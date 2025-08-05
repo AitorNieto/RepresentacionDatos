@@ -1,4 +1,4 @@
-import { ref, computed, readonly } from 'vue'
+import { ref, computed, readonly, watch } from 'vue'
 
 // Estado global singleton - una sola instancia para toda la app
 let estadoGlobal = null
@@ -92,8 +92,8 @@ export function useCargadorDatos() {
   // Cambiar temporalidad
   const cambiarTemporalidad = (nuevaTemporalidad) => {
     if (['diario', 'semanal', 'mensual'].includes(nuevaTemporalidad)) {
-      console.log('Cambiando temporalidad de', estado.value.temporalidad, 'a', nuevaTemporalidad)
       estado.value.temporalidad = nuevaTemporalidad
+      console.log('Temporalidad cambiada a:', nuevaTemporalidad)
     }
   }
 
@@ -104,18 +104,10 @@ export function useCargadorDatos() {
       return { tops: [], bottoms: [] }
     }
 
-    const temporalidadActual = estado.value.temporalidad
-    console.log('Procesando pivotes para temporalidad:', temporalidadActual)
-    console.log('Datos de pivot_points:', estado.value.datosActuales.pivot_points)
-
-    const pivotes = estado.value.datosActuales.pivot_points[temporalidadActual]
-
+    const pivotes = estado.value.datosActuales.pivot_points[estado.value.temporalidad]
     if (!pivotes) {
-      console.warn(`No hay datos para temporalidad: ${temporalidadActual}`)
       return { tops: [], bottoms: [] }
     }
-
-    console.log('Pivotes encontrados:', pivotes)
 
     const procesar = (items, esTop = true) => {
       if (!items || typeof items !== 'object') return []
@@ -175,6 +167,15 @@ export function useCargadorDatos() {
       low_fade: ohlc.low_fade || {}
     }
   })
+
+  // Observar cambios en la temporalidad
+  watch(
+    () => estado.value.temporalidad,
+    (nuevaTemporalidad) => {
+      console.log('Temporalidad observada:', nuevaTemporalidad)
+      // Aquí puedes agregar lógica adicional si es necesario
+    }
+  )
 
   // Cargar datos iniciales
   cargarDatos()

@@ -1,25 +1,51 @@
 <template>
   <div id="app">
-    <PanelPrincipal>
-      <VistaInicio />
-    </PanelPrincipal>
+    <Menu />
+    <div class="contenido-principal">
+      <PanelPrincipal>
+        <router-view />
+      </PanelPrincipal>
+    </div>
   </div>
 </template>
 
 <script>
-import { defineComponent } from 'vue'
-import PanelPrincipal from '@/components/diseno/PanelPrincipal.vue'
-import VistaInicio from './components/vistas/VistaInicio.vue'
+import { defineComponent } from 'vue';
+import PanelPrincipal from '@/components/diseno/PanelPrincipal.vue';
+import Menu from '@/components/Menu.vue';
 
 export default defineComponent({
   name: 'App',
   components: {
     PanelPrincipal,
-    VistaInicio
-  }
-})
+    Menu,
+  },
+});
 </script>
 
 <style>
-/* Estilos globales si los necesitas */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  width: 100%;
+}
+
+#app {
+  display: flex;
+  min-height: 100vh;
+}
+
+.contenido-principal {
+  flex: 1;
+  margin-left: 250px; /* Ancho del menú */
+  display: flex;
+  flex-direction: column;
+}
 </style>
