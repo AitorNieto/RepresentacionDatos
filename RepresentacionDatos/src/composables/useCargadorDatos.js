@@ -130,15 +130,15 @@ export function useCargadorDatos() {
   const datosDireccionMercado = computed(() => {
     if (!estado.value.datosActuales?.OHLC?.direction) {
       return [
-        { name: 'Alcista', value: 0 },
-        { name: 'Bajista', value: 0 }
+        { name: 'Bullish', value: 0 },
+        { name: 'Bearish', value: 0 }
       ]
     }
 
     const direction = estado.value.datosActuales.OHLC.direction
     return [
-      { name: 'Alcista', value: Number(direction.Bullish) || 0 },
-      { name: 'Bajista', value: Number(direction.Bearish) || 0 }
+      { name: 'Bullish', value: Number(direction.Bullish) || 0 },
+      { name: 'Bearish', value: Number(direction.Bearish) || 0 }
     ]
   })
 

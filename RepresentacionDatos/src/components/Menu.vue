@@ -26,7 +26,7 @@ function actualizarTemporalidad(event) {
         <li>
           <span class="apartado">Gráficos</span>
           <ul class="subapartados">
-            <li><a @click.prevent="navigate('/grafico/circular')">📊 Distribución Alcista/Bajista</a></li>
+            <li><a @click.prevent="navigate('/grafico/circular')">📊 Distribución Bullish/Bearish</a></li>
             <li><a @click.prevent="navigate('/grafico/tops-bottoms')">🕰️ Tops & Bottoms</a></li>
             <li><a @click.prevent="navigate('/grafico/tabla-ohlc')">📋 Estadísticas OHLC</a></li>
           </ul>

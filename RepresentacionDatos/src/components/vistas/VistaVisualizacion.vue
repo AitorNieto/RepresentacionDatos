@@ -3,7 +3,7 @@
     <h2>Visualizador de datos</h2>
 
     <div class="resumen">
-      <h3>Distribución Alcista/Bajista</h3>
+      <h3>Distribución Bullish/Bearish</h3>
       <GraficoCircular />
     </div>
 
