@@ -1,52 +1,48 @@
 <template>
-  <div class="grafico-container">
-    <div ref="contenedorGrafico" class="grafico"></div>
-  </div>
+  <div ref="contenedorGrafico" class="grafico-tops-bottoms"></div>
 </template>
 
 <script>
-import { ref, onMounted, watch, onBeforeUnmount } from 'vue';
-import * as echarts from 'echarts';
-import { useCargadorDatos } from '@/composables/useCargadorDatos';
+import { ref, onMounted, watch, onBeforeUnmount } from 'vue'
+import * as echarts from 'echarts'
+import { useCargadorDatos } from '@/composables/useCargadorDatos'
 
 export default {
   name: 'GraficoTopsBottoms',
   props: {
     temporalidad: {
       type: String,
-      default: 'diario',
-      validator: value => ['diario', 'semanal', 'mensual'].includes(value)
+      default: 'diario'
     }
   },
   setup(props) {
-    const contenedorGrafico = ref(null);
-    const { procesarDatosPivotes } = useCargadorDatos();
-    let miGrafico = null;
+    const contenedorGrafico = ref(null)
+    const { procesarDatosPivotes } = useCargadorDatos()
+    let miGrafico = null
 
     const inicializarGrafico = () => {
       if (contenedorGrafico.value) {
-        miGrafico = echarts.init(contenedorGrafico.value);
-        actualizarGrafico();
+        miGrafico = echarts.init(contenedorGrafico.value)
+        actualizarGrafico()
       }
-    };
+    }
 
     const actualizarGrafico = () => {
-      const { tops, bottoms } = procesarDatosPivotes(props.temporalidad);
+      const { tops, bottoms } = procesarDatosPivotes.value
 
       const opciones = {
         tooltip: {
           trigger: 'axis',
           axisPointer: { type: 'shadow' },
           formatter: params => {
-            const tipo = params[0].seriesName;
-            const valor = Math.abs(params[0].value).toFixed(2);
-            const etiqueta = params[0].axisValue;
-            return `${tipo}<br/>${etiqueta}: ${valor}`;
+            const tipo = params[0].seriesName
+            const valor = Math.abs(params[0].value).toFixed(2)
+            const etiqueta = params[0].axisValue
+            return `${tipo}<br/>${etiqueta}: ${valor}`
           }
         },
         legend: {
-          data: ['Tops', 'Bottoms'],
-          textStyle: { color: '#333' }
+          data: ['Tops', 'Bottoms']
         },
         grid: {
           left: '3%',
@@ -57,90 +53,61 @@ export default {
         xAxis: {
           type: 'category',
           data: tops.map(item => item.clave),
-          axisLine: { lineStyle: { color: '#ddd' } },
-          axisLabel: { color: '#666' }
+          axisLabel: {
+            rotate: 45,
+            interval: props.temporalidad === 'diario' ? 3 : 0
+          }
         },
         yAxis: {
           type: 'value',
-          axisLine: { lineStyle: { color: '#ddd' } },
-          axisLabel: { 
-            color: '#666',
+          axisLabel: {
             formatter: value => Math.abs(value)
-          },
-          splitLine: { lineStyle: { color: '#eee' } }
+          }
         },
         series: [
           {
             name: 'Tops',
             type: 'bar',
             data: tops.map(item => item.valor),
-            itemStyle: {
-              color: '#3b82f6',
-              borderRadius: [4, 4, 0, 0]
-            },
-            label: {
-              show: true,
-              position: 'top',
-              formatter: ({ value }) => Math.abs(value).toFixed(1)
-            }
+            itemStyle: { color: '#3b82f6' }
           },
           {
             name: 'Bottoms',
             type: 'bar',
             data: bottoms.map(item => item.valor),
-            itemStyle: {
-              color: '#ef4444',
-              borderRadius: [0, 0, 4, 4]
-            },
-            label: {
-              show: true,
-              position: 'bottom',
-              formatter: ({ value }) => Math.abs(value).toFixed(1)
-            }
+            itemStyle: { color: '#ef4444' }
           }
         ]
-      };
+      }
 
-      miGrafico.setOption(opciones);
-      miGrafico.resize(); // Asegura el redimensionado
-    };
+      miGrafico.setOption(opciones, true)
+    }
 
     const redimensionarGrafico = () => {
-      if (miGrafico) {
-        miGrafico.resize();
-      }
-    };
+      miGrafico?.resize()
+    }
 
     onMounted(() => {
-      inicializarGrafico();
-      window.addEventListener('resize', redimensionarGrafico);
-    });
+      inicializarGrafico()
+      window.addEventListener('resize', redimensionarGrafico)
+    })
 
     onBeforeUnmount(() => {
-      if (miGrafico) {
-        miGrafico.dispose();
-        window.removeEventListener('resize', redimensionarGrafico);
-      }
-    });
+      miGrafico?.dispose()
+      window.removeEventListener('resize', redimensionarGrafico)
+    })
 
-    watch(() => props.temporalidad, () => {
-      if (miGrafico) {
-        actualizarGrafico();
-      }
-    });
+    watch([() => procesarDatosPivotes.value, () => props.temporalidad], () => {
+      actualizarGrafico()
+    })
 
-    return { contenedorGrafico };
+    return { contenedorGrafico }
   }
-};
+}
 </script>
 
 <style scoped>
-.grafico-container {
-  width: 100%;
-  height: 100%;
-}
-
-.grafico {
+.grafico-tops-bottoms {
   width: 100%;
   height: 400px;
 }

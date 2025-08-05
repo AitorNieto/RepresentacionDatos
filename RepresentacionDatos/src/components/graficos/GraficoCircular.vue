@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
+import { ref, onMounted, watch, onBeforeUnmount } from 'vue'
 import * as echarts from 'echarts'
 import { useCargadorDatos } from '@/composables/useCargadorDatos'
 
@@ -36,27 +36,17 @@ export default {
           name: 'Distribución',
           type: 'pie',
           radius: ['50%', '70%'],
-          avoidLabelOverlap: false,
+          data: datosDireccionMercado.value,
           itemStyle: {
             borderRadius: 10,
             borderColor: '#fff',
             borderWidth: 2
           },
-          label: {
-            show: false,
-            position: 'center'
-          },
+          label: { show: false },
           emphasis: {
-            label: {
-              show: true,
-              fontSize: '18',
-              fontWeight: 'bold'
-            }
+            label: { show: true, fontSize: '18', fontWeight: 'bold' }
           },
-          labelLine: {
-            show: false
-          },
-          data: datosDireccionMercado.value || [], // Usamos el valor computado
+          labelLine: { show: false },
           color: ['#16a34a', '#dc2626']
         }]
       }
@@ -74,6 +64,10 @@ export default {
       window.removeEventListener('resize', () => miGrafico?.resize())
     })
 
+    watch(datosDireccionMercado, () => {
+      actualizarGrafico()
+    })
+
     return { contenedorGrafico }
   }
 }
@@ -82,6 +76,6 @@ export default {
 <style scoped>
 .grafico-circular {
   width: 100%;
-  height: 400px;
+  height: 350px;
 }
 </style>

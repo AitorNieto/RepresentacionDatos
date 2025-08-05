@@ -1,28 +1,65 @@
 import { ref, computed, readonly } from 'vue'
-import datosOHLC from '@/datos/ohlc.json'
-import datosOHLCAdicional from '@/datos/ohlc_data.json'
-import datosPivotes from '@/datos/pivot_points.json'
+
+// Importamos dinámicamente todos los archivos JSON de la carpeta datos
+const importarTodosDatos = async () => {
+  const modules = import.meta.glob('@/datos/*.json')
+  const datos = {}
+  
+  for (const path in modules) {
+    try {
+      const module = await modules[path]()
+      const nombreActivo = path.split('/').pop().replace('.json', '').toUpperCase()
+      datos[nombreActivo] = module.default || module
+    } catch (error) {
+      console.error(`Error cargando ${path}:`, error)
+    }
+  }
+  
+  return datos
+}
 
 export function useCargadorDatos() {
-  // Combinamos todos los datos OHLC
-  const datosCombinadosOHLC = {
-    ...datosOHLC.OHLC,
-    ...datosOHLCAdicional?.OHLC || {}
-  }
-
   const estado = ref({
-    datos: {
-      ohlc: datosCombinadosOHLC,
-      pivotes: datosPivotes.pivot_points
-    },
+    todosDatos: null,
+    datosActuales: null,
     temporalidad: 'diario',
-    activo: 'EURUSD',
-    cargando: false
+    activo: null,
+    activosDisponibles: [],
+    cargando: true
   })
 
-  // Procesar datos de pivotes para gráficos
-  const procesarDatosPivotes = (temporalidad = estado.value.temporalidad) => {
-    const datosTemporales = estado.value.datos.pivotes[temporalidad]
+  // Cargar todos los datos al iniciar
+  const cargarDatos = async () => {
+    estado.value.cargando = true
+    estado.value.todosDatos = await importarTodosDatos()
+    estado.value.activosDisponibles = Object.keys(estado.value.todosDatos)
+    
+    // Establecer primer activo disponible por defecto
+    if (estado.value.activosDisponibles.length > 0) {
+      cambiarActivo(estado.value.activosDisponibles[0])
+    }
+    
+    estado.value.cargando = false
+  }
+
+  // Cambiar activo
+  const cambiarActivo = (nuevoActivo) => {
+    if (estado.value.todosDatos[nuevoActivo]) {
+      estado.value.activo = nuevoActivo
+      estado.value.datosActuales = estado.value.todosDatos[nuevoActivo]
+    }
+  }
+
+  // Cambiar temporalidad
+  const cambiarTemporalidad = (nuevaTemporalidad) => {
+    estado.value.temporalidad = nuevaTemporalidad
+  }
+
+  // Procesar datos para gráfico de tops/bottoms
+  const procesarDatosPivotes = computed(() => {
+    if (!estado.value.datosActuales) return { tops: [], bottoms: [] }
+    
+    const datos = estado.value.datosActuales.pivot_points?.[estado.value.temporalidad] || {}
     
     const procesar = (items, esTop = true) => {
       return Object.entries(items).map(([clave, valor]) => ({
@@ -32,56 +69,42 @@ export function useCargadorDatos() {
     }
 
     return {
-      tops: procesar(datosTemporales.top, true),
-      bottoms: procesar(datosTemporales.bottom, false),
-      temporalidad
+      tops: procesar(datos.top || {}, true),
+      bottoms: procesar(datos.bottom || {}, false)
     }
-  }
+  })
 
-  // Datos para el gráfico circular (bullish/bearish)
+  // Datos para gráfico circular (bullish/bearish)
   const datosDireccionMercado = computed(() => {
+    if (!estado.value.datosActuales) return []
+    const direction = estado.value.datosActuales.OHLC?.direction || {}
     return [
-      { name: 'Alcista', value: estado.value.datos.ohlc.direction.Bullish },
-      { name: 'Bajista', value: estado.value.datos.ohlc.direction.Bearish }
+      { name: 'Alcista', value: direction.Bullish || 0 },
+      { name: 'Bajista', value: direction.Bearish || 0 }
     ]
   })
 
-  // Datos para el gráfico de tipos de velas
-  const datosTiposVela = computed(() => {
-    return Object.entries(estado.value.datos.ohlc.candle_type).map(([name, value]) => ({
-      name,
-      value
-    }))
-  })
-
-  // Estadísticas OHLC para la tabla
+  // Datos para la tabla OHLC
   const datosOHLCTabla = computed(() => {
-    const temp = estado.value.temporalidad
+    if (!estado.value.datosActuales) return {}
+    const ohlc = estado.value.datosActuales.OHLC?.[estado.value.temporalidad] || {}
     return {
-      higher_extension: estado.value.datos.ohlc[temp]?.higher_extension || {},
-      lower_extension: estado.value.datos.ohlc[temp]?.lower_extension || {},
-      high_fade: estado.value.datos.ohlc[temp]?.high_fade || {},
-      low_fade: estado.value.datos.ohlc[temp]?.low_fade || {}
+      higher_extension: ohlc.higher_extension || {},
+      lower_extension: ohlc.lower_extension || {},
+      high_fade: ohlc.high_fade || {},
+      low_fade: ohlc.low_fade || {}
     }
   })
 
-  // Cambiar temporalidad
-  const cambiarTemporalidad = (nuevaTemporalidad) => {
-    estado.value.temporalidad = nuevaTemporalidad
-  }
-
-  // Cambiar activo
-  const cambiarActivo = (nuevoActivo) => {
-    estado.value.activo = nuevoActivo
-  }
+  // Cargar datos iniciales
+  cargarDatos()
 
   return {
     estado: readonly(estado),
+    cambiarActivo,
+    cambiarTemporalidad,
     procesarDatosPivotes,
     datosDireccionMercado,
-    datosTiposVela,
-    datosOHLCTabla,
-    cambiarTemporalidad,
-    cambiarActivo
+    datosOHLCTabla
   }
 }

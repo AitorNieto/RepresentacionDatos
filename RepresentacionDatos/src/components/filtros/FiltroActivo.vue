@@ -1,13 +1,16 @@
 <template>
   <div class="filtro-activo">
-    <label for="activo" class="etiqueta-filtro">Activo:</label>
+    <label>Activo:</label>
     <select 
-      id="activo" 
       v-model="activoSeleccionado" 
       @change="cambiarActivo"
-      class="selector-filtro"
+      :disabled="!activosDisponibles.length"
     >
-      <option v-for="activo in activosDisponibles" :key="activo" :value="activo">
+      <option 
+        v-for="activo in activosDisponibles" 
+        :key="activo" 
+        :value="activo"
+      >
         {{ activo }}
       </option>
     </select>
@@ -15,38 +18,24 @@
 </template>
 
 <script>
+import { computed } from 'vue'
+import { useCargadorDatos } from '@/composables/useCargadorDatos'
+
 export default {
   name: 'FiltroActivo',
-  props: {
-    modelValue: {
-      type: String,
-      default: 'EURUSD'
-    }
-  },
-  emits: ['update:modelValue'],
-  data() {
+  setup() {
+    const { estado, cambiarActivo } = useCargadorDatos()
+    
+    const activosDisponibles = computed(() => estado.activosDisponibles || [])
+    const activoSeleccionado = computed({
+      get: () => estado.activo,
+      set: (nuevoActivo) => cambiarActivo(nuevoActivo)
+    })
+
     return {
-      activoSeleccionado: this.modelValue,
-      activosDisponibles: [
-        'EURUSD',
-        'GBPUSD',
-        'USDJPY',
-        'AUDUSD',
-        'USDCAD',
-        'GOLD',
-        'SP500',
-        'NASDAQ'
-      ]
-    }
-  },
-  watch: {
-    modelValue(newVal) {
-      this.activoSeleccionado = newVal
-    }
-  },
-  methods: {
-    cambiarActivo() {
-      this.$emit('update:modelValue', this.activoSeleccionado)
+      activoSeleccionado,
+      activosDisponibles,
+      cambiarActivo
     }
   }
 }
@@ -59,13 +48,10 @@ export default {
   gap: 8px;
 }
 
-.selector-filtro {
+select {
   padding: 8px 12px;
   border-radius: 4px;
-  border: 1px solid #d6d3d1;
-  background-color: white;
-  color: #292524;
-  cursor: pointer;
+  border: 1px solid #ddd;
   min-width: 120px;
 }
 </style>
