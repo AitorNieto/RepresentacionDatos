@@ -1,13 +1,25 @@
-<script setup>
-import Menu from './components/Menu.vue'
-</script>
-
 <template>
   <div id="app">
-    <h1>Bienvenido a la Aplicación</h1>
-  <Menu />
+    <PanelPrincipal>
+      <VistaInicio />
+    </PanelPrincipal>
   </div>
 </template>
 
-<style scoped>
+<script>
+import { defineComponent } from 'vue'
+import PanelPrincipal from '@/components/diseno/PanelPrincipal.vue'
+import VistaInicio from './components/vistas/VistaInicio.vue'
+
+export default defineComponent({
+  name: 'App',
+  components: {
+    PanelPrincipal,
+    VistaInicio
+  }
+})
+</script>
+
+<style>
+/* Estilos globales si los necesitas */
 </style>
