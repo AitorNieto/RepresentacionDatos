@@ -6,15 +6,7 @@
       </div>
       <nav class="navegacion">
         <button 
-          class="boton-nav" 
-          :class="{ 'activo': seccionActiva === 'adquisicion' }" 
-          @click="navegar('adquisicion')"
-        >
-          Adquisición de datos
-        </button>
-        <button 
-          class="boton-nav" 
-          :class="{ 'activo': seccionActiva === 'visualizacion' }" 
+          class="boton-nav activo"
           @click="navegar('visualizacion')"
         >
           Visualizador de datos
@@ -29,40 +21,21 @@
 </template>
 
 <script>
-import { ref, watch } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 export default {
   name: 'PanelPrincipal',
   setup() {
     const router = useRouter();
-    const route = useRoute();
-    const seccionActiva = ref('visualizacion');
 
     const navegar = (seccion) => {
-      seccionActiva.value = seccion;
-      if (seccion === 'adquisicion') {
-        router.push('/adquisicion');
-      } else if (seccion === 'visualizacion') {
+      if (seccion === 'visualizacion') {
         router.push('/visualizacion');
       }
     };
 
-    // Actualiza la sección activa según la ruta actual
-    watch(
-      () => route.path,
-      (nuevaRuta) => {
-        if (nuevaRuta.includes('adquisicion')) {
-          seccionActiva.value = 'adquisicion';
-        } else if (nuevaRuta.includes('visualizacion')) {
-          seccionActiva.value = 'visualizacion';
-        }
-      },
-      { immediate: true }
-    );
-
     return {
-      seccionActiva,
       navegar,
     };
   },

@@ -8,6 +8,11 @@
     </div>
 
     <div class="resumen">
+      <h3>Tops y Bottoms</h3>
+      <GraficoTopsBottoms />
+    </div>
+
+    <div class="resumen">
       <h3>Estadísticas OHLC</h3>
       <TablaOHLC />
     </div>
@@ -16,12 +21,14 @@
 
 <script>
 import GraficoCircular from '@/components/graficos/GraficoCircular.vue';
+import GraficoTopsBottoms from '@/components/graficos/GraficoTopsBottoms.vue';
 import TablaOHLC from '@/components/graficos/TablaOHLC.vue';
 
 export default {
   name: 'VistaVisualizacion',
   components: {
     GraficoCircular,
+    GraficoTopsBottoms,
     TablaOHLC,
   },
 };

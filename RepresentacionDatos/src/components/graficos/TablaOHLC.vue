@@ -57,25 +57,45 @@ export default {
 <style scoped>
 .tabla-ohlc {
   overflow-x: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: white;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 th, td {
-  padding: 8px 12px;
+  padding: 12px 16px;
   text-align: center;
   border-bottom: 1px solid #e2e8f0;
 }
 
 th {
-  background-color: #f8fafc;
+  background-color: #3b82f6;
+  color: white;
   font-weight: 600;
+  text-transform: uppercase;
+}
+
+tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+tr:nth-child(odd) {
+  background-color: #ffffff;
 }
 
 tr:hover {
-  background-color: #f1f5f9;
+  background-color: #e5f3ff;
+}
+
+td {
+  color: #374151;
+  font-size: 0.95rem;
 }
 </style>

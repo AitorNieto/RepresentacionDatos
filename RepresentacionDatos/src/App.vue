@@ -48,4 +48,14 @@ body,
   display: flex;
   flex-direction: column;
 }
+
+@media (max-width: 768px) {
+  #app {
+    flex-direction: column;
+  }
+
+  .contenido-principal {
+    margin-left: 0;
+  }
+}
 </style>
